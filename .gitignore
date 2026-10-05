@@ -1,0 +1,48 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Frontend
+node_modules/
+dist/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Databases / local data
+*.db
+*.sqlite
+*.sqlite3
+
+# Large datasets
+*.csv
+*.xlsx
+
+# Python-generated model data
+model_training/data/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Backup files
+*_BACKUP*
+*.bak
+jobscamscore-frontend/
+
+# Project backups and archives
+*.zip
+*BACKUP*
+*.bak
+
+# Local test output
+*_results.json
+
+# Test result files
+*_results*.json

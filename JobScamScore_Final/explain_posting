@@ -1,0 +1,118 @@
+"""
+explain_posting.py
+
+Shows WHY the engines gave a particular result for one or more of the
+14 sample postings in test_postings.py.
+
+Run from the JobScamScore_Final folder, with Flask running:
+
+    .\\.venv\\Scripts\\python.exe explain_posting.py 3 12 14
+
+The numbers are the order of the postings in the test_postings.py table:
+    1 Infosys  2 TCS  3 Wipro  4 Accenture  5 IBM  6 Zoho
+    7 Local Accountant  8 Local Marketing
+    9 Scam 1  10 Scam 2  11 Scam 3  12 Scam 4  13 Scam 5  14 Scam 6
+
+Each posting is analysed again, so it adds one row to the database per posting.
+"""
+
+import sys
+
+import requests
+
+from test_postings import POSTINGS, API_URL, TIMEOUT_SECONDS
+
+
+def get(dictionary, *path, default=None):
+    """Safely walk into nested dictionaries."""
+    current = dictionary
+    for key in path:
+        if not isinstance(current, dict):
+            return default
+        current = current.get(key)
+        if current is None:
+            return default
+    return current
+
+
+def show_engine(name, engine):
+    status = get(engine, "status")
+    print("  %-34s score=%-6s risk=%-7s status=%s" % (
+        name, get(engine, "score"), get(engine, "risk"), status))
+    errors = get(engine, "errors", default=[])
+    if errors:
+        print("      errors:", "; ".join(str(e) for e in errors)[:140])
+
+
+def part(label, sub):
+    """One line for a sub-analysis: its risk plus what it found."""
+    print("      - %-26s risk=%s" % (label, get(sub, "risk")))
+
+
+def explain(number):
+    posting = POSTINGS[number - 1]
+    print("=" * 78)
+    print("%d. %s   [%s]" % (number, posting["label"], posting["kind"]))
+    print("=" * 78)
+
+    response = requests.post(API_URL, json=posting["data"], timeout=TIMEOUT_SECONDS)
+    if response.status_code != 200:
+        print("  HTTP", response.status_code, response.text[:200])
+        return
+    body = response.json()
+
+    show_engine("Engine 1 - Digital Identity", body.get("engine1"))
+    show_engine("Engine 2 - Job Content", body.get("engine2"))
+
+    e2 = get(body, "engine2", "data", default={})
+    part("keywords", e2.get("keyword_analysis"))
+    print("          found:", get(e2, "keyword_analysis", "data", "detected_keywords"))
+    part("salary", e2.get("salary_analysis"))
+    print("          found:", get(e2, "salary_analysis", "data", "salary_values"))
+    part("grammar", e2.get("grammar_analysis"))
+    print("          issues:", get(e2, "grammar_analysis", "data", "issues"))
+    part("urgency", e2.get("urgency_analysis"))
+    print("          found:", get(e2, "urgency_analysis", "data", "detected_phrases"))
+    part("contact", e2.get("contact_analysis"))
+
+    show_engine("Engine 3 - Job Intelligence", body.get("engine3"))
+    e3 = get(body, "engine3", "data", default={})
+    part("patterns", e3.get("pattern_analysis"))
+    print("          found:", get(e3, "pattern_analysis", "data", "detected_patterns"))
+    part("scam behaviours", e3.get("scam_behavior_analysis"))
+    print("          found:", get(e3, "scam_behavior_analysis", "data", "detected_behaviors"))
+    part("job consistency", e3.get("job_consistency_analysis"))
+    print("          issues:", get(e3, "job_consistency_analysis", "data", "consistency_issues"))
+    part("salary consistency", e3.get("salary_consistency_analysis"))
+    print("          status:", get(e3, "salary_consistency_analysis", "data", "salary_status"))
+    part("content heuristics", e3.get("ai_content_analysis"))
+    print("          found:", get(e3, "ai_content_analysis", "data", "detected_characteristics"))
+    part("anomalies", e3.get("anomaly_analysis"))
+    print("          found:", get(e3, "anomaly_analysis", "data", "anomalies"))
+    print("      - component scores:", get(e3, "intelligence_score", "data", "component_scores"))
+
+    show_engine("Engine 4 - Cyber Threat (risk score)", body.get("engine4"))
+
+    print("  Engine 5:")
+    print("      resolved risk :", get(body, "engine5", "data", "conflict_resolution", "resolved_risk"))
+    print("      decision      :", get(body, "engine5", "data", "decision"))
+    print("      confidence    :", get(body, "engine5", "data", "confidence"))
+    print("      final score   :", get(body, "engine5", "score"))
+    print()
+
+
+def main():
+    numbers = []
+    for argument in sys.argv[1:]:
+        if argument.isdigit() and 1 <= int(argument) <= len(POSTINGS):
+            numbers.append(int(argument))
+    if not numbers:
+        print("Give one or more posting numbers (1-%d), for example:" % len(POSTINGS))
+        print("    .\\.venv\\Scripts\\python.exe explain_posting.py 3 12 14")
+        return
+    for number in numbers:
+        explain(number)
+
+
+if __name__ == "__main__":
+    main()
