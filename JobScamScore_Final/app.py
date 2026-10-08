@@ -19,6 +19,7 @@ from flask_cors import CORS
 
 import database
 
+from ad_check import check_job_ad
 # =========================================================
 # LOAD ENGINES (same exact method as integration_test.py)
 # =========================================================
@@ -123,6 +124,10 @@ def analyze():
 
     if not job_data:
         return jsonify({"error": "No job data provided."}), 400
+
+    looks_ok, reason = check_job_ad(job_data.get("job_description", ""))
+    if not looks_ok:
+        return jsonify({"error": reason}), 422
 
     test_job = {
         "company_name": job_data.get("company_name", ""),
