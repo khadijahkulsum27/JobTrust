@@ -9,7 +9,15 @@ from utils.constants import (
     RISK_MEDIUM,
     RISK_HIGH
 )
-
+# Very common words that should never count as "repetition".
+COMMON_WORDS = {
+    "that", "this", "with", "have", "will", "from", "your", "they", "their",
+    "them", "what", "when", "where", "which", "while", "would", "could",
+    "should", "about", "into", "than", "then", "also", "more", "most",
+    "such", "each", "other", "only", "over", "well", "must", "able",
+    "team", "work", "role", "experience", "skills", "company", "candidate",
+    "required", "looking", "join", "responsible", "ability", "strong",
+}
 
 def detect_anomalies(job_data):
     """
@@ -104,7 +112,7 @@ def detect_anomalies(job_data):
                 .lower()
             )
 
-            if cleaned_word:
+            if len(cleaned_word) >= 4 and cleaned_word not in COMMON_WORDS:
 
                 word_frequency[cleaned_word] = (
                     word_frequency.get(
