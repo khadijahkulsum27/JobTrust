@@ -1,3 +1,4 @@
+import re
 from utils.response_builder import create_engine_response
 
 from utils.constants import (
@@ -264,9 +265,13 @@ def detect_anomalies(job_data):
         if "telegram" in text:
             contact_methods += 1
 
-        if "signal" in text:
+        if re.search(
+            r"\b(on|via|through)\s+signal\b(?!\s+(?:processing|analysis|integrity|strength|noise))"
+            r"|\bsignal\s+(app|group|messenger|number|chat)\b",
+            text
+        ):
             contact_methods += 1
-
+            
         if "email" in text:
             contact_methods += 1
 
