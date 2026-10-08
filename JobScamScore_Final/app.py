@@ -29,7 +29,7 @@ sys.path.insert(0, PROJECT_ROOT)
 ENGINE_1_PATH = os.path.join(PROJECT_ROOT, "Engine 1")
 ENGINE_2_PATH = os.path.join(PROJECT_ROOT, "Engine 2")
 ENGINE_3_PATH = os.path.join(PROJECT_ROOT, "Engine 3")
-ENGINE_4_PATH = os.path.join(PROJECT_ROOT, "Engine 4 ")
+ENGINE_4_PATH = os.path.join(PROJECT_ROOT, "Engine 4")
 ENGINE_5_PATH = os.path.join(PROJECT_ROOT, "Engine 5")
 ENGINE_6_PATH = os.path.join(PROJECT_ROOT, "Engine 6")
 
@@ -64,7 +64,7 @@ engine3 = load_module(
 )
 
 engine4 = load_module(
-    os.path.join(PROJECT_ROOT, "Engine 4 ", "cyber_threat_engine.py"),
+    os.path.join(PROJECT_ROOT, "Engine 4", "cyber_threat_engine.py"),
     "engine4"
 )
 
