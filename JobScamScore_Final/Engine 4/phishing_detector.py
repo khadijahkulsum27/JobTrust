@@ -131,10 +131,20 @@ def detect_phishing(url):
 
         hostname_parts = hostname.split(".")
 
-        if len(hostname_parts) > 3:
+        # Endings like ".co.in" count as one part, so the main domain is 3 parts long.
+        if (
+            len(hostname_parts) >= 3
+            and len(hostname_parts[-1]) == 2
+            and hostname_parts[-2] in ("co", "com", "org", "net", "gov", "ac", "edu", "nic", "res", "ltd", "plc")
+        ):
+            main_length = 3
+        else:
+            main_length = 2
+
+        if len(hostname_parts) > main_length + 1:
 
             subdomain = ".".join(
-                hostname_parts[:-2]
+                hostname_parts[:-main_length]
             )
 
             for term in SUSPICIOUS_DOMAIN_TERMS:
@@ -151,7 +161,7 @@ def detect_phishing(url):
         # Hyphen-heavy domain detection
         # -----------------------------------------
 
-        domain = ".".join(hostname_parts[-2:])
+        domain = ".".join(hostname_parts[-main_length:])
 
         if domain.count("-") >= 3:
 
