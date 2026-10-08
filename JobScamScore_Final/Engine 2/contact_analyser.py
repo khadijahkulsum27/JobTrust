@@ -93,22 +93,20 @@ def analyze_contact(job_description):
 
         messaging_platforms = []
 
-        messaging_keywords = [
-            "whatsapp",
-            "telegram",
-            "signal"
-        ]
-
         text_lower = text.lower()
 
-        for platform in messaging_keywords:
+        if re.search(r"\bwhatsapp\b", text_lower):
+            messaging_platforms.append("whatsapp")
 
-            if platform in text_lower:
+        if re.search(r"\btelegram\b", text_lower):
+            messaging_platforms.append("telegram")
 
-                messaging_platforms.append(
-                    platform
-                )
-
+        if re.search(
+            r"\b(on|via|through)\s+signal\b(?!\s+(?:processing|analysis|integrity|strength|noise))"
+            r"|\bsignal\s+(app|group|messenger|number|chat)\b",
+            text_lower
+        ):
+            messaging_platforms.append("signal")
         # Remove duplicates
         messaging_platforms = list(
             dict.fromkeys(
