@@ -8,7 +8,13 @@ from utils.constants import (
     RISK_MEDIUM,
     RISK_HIGH
 )
-
+# Common acronyms that are normally written in capitals.
+KNOWN_ACRONYMS = {
+    "SQL", "HTML", "CSS", "API", "AWS", "UI", "UX", "AI", "ML", "IT", "HR",
+    "QA", "BPO", "KPO", "MBA", "BCA", "MCA", "BTECH", "CTC", "LPA", "PHP",
+    "ERP", "CRM", "SAP", "SEO", "PDF", "USA", "UK", "GST", "PAN", "CEO",
+    "CTO", "CFO", "VP", "MS", "OS", "DB", "JS", "C", "R", "II", "III",
+}
 
 def check_grammar(job_description):
     """
@@ -81,9 +87,11 @@ def check_grammar(job_description):
         uppercase_words = [
             word
             for word in words
-            if word.isalpha() and word.isupper()
+            if word.isalpha()
+            and word.isupper()
+            and word not in KNOWN_ACRONYMS
         ]
-
+            
         uppercase_ratio = (
             len(uppercase_words) / len(words)
             if words
