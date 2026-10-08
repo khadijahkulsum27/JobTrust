@@ -180,10 +180,13 @@ def detect_anomalies(job_data):
             "payment"
         ]
 
-        money_term_count = sum(
-            text.count(term)
-            for term in money_terms
+        money_term_count = len(
+            re.findall(
+                r"\b(?:earn|earns|earning|earnings|income|salary|cash|money|profit|payment)\b",
+                text
+            )
         )
+            
 
         if (
             word_count >= 20
