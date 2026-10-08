@@ -107,7 +107,35 @@ def analyze_salary(job_description):
                 salaries
             )
         )
+        
+        # If the ad says the pay is yearly, convert it to monthly
+        # because the limit we compare with is a monthly amount.
+        yearly_words = re.search(
+            r"per\s+(?:year|annum|yr)|/\s*(?:year|yr)|\bannual(?:ly)?\b|\byearly\b|\blpa\b",
+            text
+        )
+        monthly_words = re.search(
+            r"per\s+month|/\s*month|\bmonthly\b",
+            text
+        )
+        
+        # If the ad says the pay is yearly, convert it to monthly
+        # because the limit we compare with is a monthly amount.
+        yearly_words = re.search(
+            r"per\s+(?:year|annum|yr)|/\s*(?:year|yr)|\bannual(?:ly)?\b|\byearly\b|\blpa\b",
+            text
+        )
+        monthly_words = re.search(
+            r"per\s+month|/\s*month|\bmonthly\b",
+            text
+        )
 
+        salary_period = "monthly"
+
+        if yearly_words and not monthly_words:
+            salary_period = "yearly"
+            salaries = [round(s / 12) for s in salaries]
+        
         # =================================================
         # NO SALARY DETECTED
         # =================================================
@@ -165,6 +193,7 @@ def analyze_salary(job_description):
         result["data"] = {
             "salary_found": True,
             "salary_values": salaries,
+            "salary_period": salary_period,
             "excessive_salary": excessive_salary
         }
 
