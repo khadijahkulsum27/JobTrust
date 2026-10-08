@@ -1,3 +1,4 @@
+import re
 from utils.response_builder import create_engine_response
 
 from utils.constants import (
@@ -112,15 +113,14 @@ def detect_patterns(job_data):
             ]
         )
 
-        messaging_contact = any(
-            platform in job_description
-            for platform in [
-                "whatsapp",
-                "telegram",
-                "signal"
-            ]
+        messaging_contact = bool(
+            re.search(
+                r"\b(whatsapp|telegram)\b"
+                r"|\b(on|via|through)\s+signal\b(?!\s+(?:processing|analysis|integrity|strength|noise))"
+                r"|\bsignal\s+(app|group|messenger|number|chat)\b",
+                job_description
+            )
         )
-
         # =================================================
         # BUILD DETECTED SIGNALS
         # =================================================
