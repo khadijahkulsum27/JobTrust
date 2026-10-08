@@ -1,3 +1,4 @@
+import re
 from utils.response_builder import create_engine_response
 
 from utils.constants import (
@@ -140,7 +141,7 @@ def detect_scam_behavior(job_data):
         # -------------------------------------------------
 
         sensitive_information_request = any(
-            phrase in job_description
+            re.search(r"\b" + re.escape(phrase) + r"\b", job_description)
             for phrase in [
                 "send your aadhaar",
                 "send aadhaar",
@@ -153,7 +154,6 @@ def detect_scam_behavior(job_data):
                 "one time password"
             ]
         )
-
         if sensitive_information_request:
 
             detected_behaviors.append(
