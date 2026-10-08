@@ -100,6 +100,17 @@ database.create_tables()
 def health():
     return jsonify({"status": "ok"})
 
+def clean_salary(value):
+    """Turns salary into a number, or None if blank or not a number."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return value if value > 0 else None
+    try:
+        number = float(str(value).replace(",", "").strip())
+    except ValueError:
+        return None
+    return number if number > 0 else None
 
 @app.route("/api/analyze", methods=["POST"])
 def analyze():
@@ -119,7 +130,7 @@ def analyze():
         "email": job_data.get("email", ""),
         "job_title": job_data.get("job_title", ""),
         "job_description": job_data.get("job_description", ""),
-        "salary": job_data.get("salary") if job_data.get("salary") not in ("", None) else None,
+        "salary": clean_salary(job_data.get("salary")),
         "experience_level": job_data.get("experience_level", "")
     }
 
