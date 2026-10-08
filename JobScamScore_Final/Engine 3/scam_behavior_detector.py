@@ -164,13 +164,13 @@ def detect_scam_behavior(job_data):
         # Messaging-platform recruitment
         # -------------------------------------------------
 
-        messaging_recruitment = any(
-            platform in job_description
-            for platform in [
-                "whatsapp",
-                "telegram",
-                "signal"
-            ]
+        messaging_recruitment = bool(
+            re.search(
+                r"\b(whatsapp|telegram)\b"
+                r"|\b(on|via|through)\s+signal\b(?!\s+(?:processing|analysis|integrity|strength|noise))"
+                r"|\bsignal\s+(app|group|messenger|number|chat)\b",
+                job_description
+            )
         )
 
         if messaging_recruitment:
