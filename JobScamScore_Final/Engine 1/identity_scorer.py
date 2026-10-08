@@ -16,7 +16,21 @@ from utils.constants import (
     TRUST_HIGH,
     TRUST_MEDIUM
 )
+def _points(check_result, full_points):
+    """Full points for LOW risk, half for MEDIUM, none for HIGH or a failed check."""
 
+    if check_result.get("status") != STATUS_SUCCESS:
+        return 0
+
+    risk = check_result.get("risk")
+
+    if risk == RISK_LOW:
+        return full_points
+
+    if risk == RISK_MEDIUM:
+        return full_points // 2
+
+    return 0
 
 def calculate_identity_score(
     website_result,
@@ -46,31 +60,22 @@ def calculate_identity_score(
 
     try:
 
+        
         score = 0
 
-        # Website Verification
-        if website_result["status"] == STATUS_SUCCESS:
-            score += WEBSITE_SCORE
+        score += _points(website_result, WEBSITE_SCORE)
+        score += _points(ssl_result, SSL_SCORE)
+        score += _points(email_result, EMAIL_SCORE)
+        score += _points(whois_result, WHOIS_SCORE)
 
-        # SSL Verification
-        if ssl_result["status"] == STATUS_SUCCESS:
-            score += SSL_SCORE
-
-        # Email Verification
-        if email_result["status"] == STATUS_SUCCESS:
-            score += EMAIL_SCORE
-
-        # WHOIS Verification
-        if whois_result["status"] == STATUS_SUCCESS:
-            score += WHOIS_SCORE
-
-        # Domain Matching
-        if domain_result["status"] == STATUS_SUCCESS:
-            if domain_result["data"]["domain_match"]:
+        # Domain matching: full points only if the domains match
+        if domain_result.get("status") == STATUS_SUCCESS:
+            if domain_result.get("data", {}).get("domain_match"):
                 score += DOMAIN_MATCH_SCORE
-        # MCA Verification
-        if mca_result["status"] == STATUS_SUCCESS:
-            if mca_result["data"]["registered"]:
+
+        # MCA verification: full points only if the company was found
+        if mca_result.get("status") == STATUS_SUCCESS:
+            if mca_result.get("data", {}).get("registered"):
                 score += MCA_SCORE
         # Determine Risk Level
         if score >= TRUST_HIGH:
@@ -88,7 +93,7 @@ def calculate_identity_score(
 
         result["data"] = {
             "identity_score": score,
-            "mca_verified": mca_result["data"]["registered"]
+            "mca_verified": mca_result.get("data", {}).get("registered", False)
 }
         
 
