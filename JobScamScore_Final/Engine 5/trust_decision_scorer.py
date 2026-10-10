@@ -196,7 +196,8 @@ def calculate_trust_decision_score(
     total_score = sum(normalized_scores.values())
     available_count = len(normalized_scores)
 
-    trust_score = total_score / available_count
+        # Engines that did not run count as 0, so the score is always out of all 4 engines.
+    trust_score = total_score / TOTAL_ENGINES
     trust_score = round(
         max(0.0, min(trust_score, 100.0)),
         2
