@@ -92,6 +92,48 @@ CORS(app)  # allows the React app (running on a different port) to call this API
 
 database.create_tables()
 
+# =========================================================
+# TEXT MODEL (separate "second opinion", does not change the engines)
+# =========================================================
+
+import joblib
+
+MODEL_PATH = os.path.join(PROJECT_ROOT, "model_training", "job_text_model.joblib")
+
+try:
+    text_model = joblib.load(MODEL_PATH)
+except Exception as e:
+    text_model = None
+    print("Text model could not be loaded:", e)
+
+
+def model_opinion(job_title, job_description):
+    """Asks the trained text model how likely the ad wording is to be fake."""
+
+    if text_model is None:
+        return {"available": False, "note": "The text model is not available."}
+
+    text = " ".join((str(job_title) + ". " + str(job_description)).split())
+
+    try:
+        probability = float(text_model.predict_proba([text])[0][1])
+    except Exception as e:
+        return {"available": False, "note": "The text model could not read this text: " + str(e)}
+
+    if probability >= 0.7:
+        label = "LIKELY_FAKE"
+    elif probability >= 0.4:
+        label = "UNSURE"
+    else:
+        label = "LIKELY_GENUINE"
+
+    return {
+        "available": True,
+        "fake_probability": round(probability, 3),
+        "label": label,
+        "note": "Based on the wording of the ad only. Trained on an older public dataset, so use it as a second opinion, not a verdict."
+    }
+
 
 # =========================================================
 # ROUTES
@@ -193,8 +235,13 @@ def analyze():
         "engine3": engine3_result,
         "engine4": engine4_result,
         "engine5": engine5_result,
-        "engine6": engine6_result
+        "engine6": engine6_result,
+        "ml_opinion": model_opinion(
+            job_data.get("job_title", ""),
+            job_data.get("job_description", "")
+        )
     })
+    
 
 
 @app.route("/api/reports", methods=["GET"])
