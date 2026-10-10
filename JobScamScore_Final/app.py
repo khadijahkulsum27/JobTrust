@@ -19,6 +19,16 @@ from flask_cors import CORS
 
 import database
 
+# Load secret keys from the local .env file (this file is never uploaded to GitHub).
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(_env_path):
+    with open(_env_path, encoding="utf-8") as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+                
 from ad_check import check_job_ad
 # =========================================================
 # LOAD ENGINES (same exact method as integration_test.py)

@@ -46,3 +46,5 @@ jobscamscore-frontend/
 
 # Test result files
 *_results*.json
+
+.env
