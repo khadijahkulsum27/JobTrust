@@ -5,14 +5,18 @@ Detects common suspicious patterns in website URLs
 that may indicate phishing or deceptive websites.
 """
 
+import os
 import re
 from urllib.parse import urlparse
+
+import requests
 
 from utils.constants import (
     CYBER_INDICATOR_SUSPICIOUS_URL,
     CYBER_INDICATOR_SUSPICIOUS_SUBDOMAIN,
+    CYBER_INDICATOR_THREAT_DETECTED,
+    CYBER_INDICATOR_RISKY_DOMAIN,
 )
-
 
 # Common words frequently seen in deceptive URLs.
 SUSPICIOUS_URL_TERMS = [
@@ -45,7 +49,47 @@ SUSPICIOUS_DOMAIN_TERMS = [
     "job",
     "recruitment"
 ]
+def check_safe_browsing(url):
+    """Asks Google Safe Browsing if the URL is listed as unsafe. Never crashes."""
 
+    unavailable = {"available": False, "threat_found": False, "threat_types": []}
+
+    key = os.environ.get("GOOGLE_SAFE_BROWSING_KEY")
+
+    if not key:
+        return unavailable
+
+    body = {
+        "client": {"clientId": "jobtrust", "clientVersion": "1.0"},
+        "threatInfo": {
+            "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE"],
+            "platformTypes": ["ANY_PLATFORM"],
+            "threatEntryTypes": ["URL"],
+            "threatEntries": [{"url": url}],
+        },
+    }
+
+    try:
+        response = requests.post(
+            "https://safebrowsing.googleapis.com/v4/threatMatches:find",
+            params={"key": key},
+            json=body,
+            timeout=5,
+        )
+
+        if response.status_code != 200:
+            return unavailable
+
+        matches = response.json().get("matches", [])
+
+        return {
+            "available": True,
+            "threat_found": bool(matches),
+            "threat_types": sorted({m.get("threatType") for m in matches}),
+        }
+
+    except Exception:
+        return unavailable
 
 def detect_phishing(url):
     """
@@ -213,7 +257,20 @@ def detect_phishing(url):
             result["indicators"].append(
                 CYBER_INDICATOR_SUSPICIOUS_URL
             )
+        # -----------------------------------------
+        # Google Safe Browsing (extra evidence; skipped quietly if unavailable)
+        # -----------------------------------------
 
+        safe_browsing = check_safe_browsing(url)
+        result["safe_browsing"] = safe_browsing
+
+        if safe_browsing["threat_found"]:
+            # A Google listing is strong evidence, so it counts as two indicators.
+            result["indicators"].append(CYBER_INDICATOR_THREAT_DETECTED)
+            result["indicators"].append(CYBER_INDICATOR_RISKY_DOMAIN)
+            result["remarks"].append(
+                "Google Safe Browsing lists this website as unsafe."
+            )
         # -----------------------------------------
         # Remove duplicate indicators
         # -----------------------------------------
