@@ -30,6 +30,7 @@ if os.path.exists(_env_path):
                 os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
                 
 from ad_check import check_job_ad
+from plain_explainer import build_plain_explanation
 # =========================================================
 # LOAD ENGINES (same exact method as integration_test.py)
 # =========================================================
@@ -237,6 +238,18 @@ def analyze():
 
     engine6_report = engine6_result.get("data", {})
     database.save_report(processing_id, engine6_report)
+    ml = model_opinion(
+        job_data.get("job_title", ""),
+        job_data.get("job_description", "")
+    )
+    assessment = (engine6_result.get("data") or {}).get("trust_assessment") or {}
+    plain = build_plain_explanation(
+        engine1_result, engine2_result, engine3_result, engine4_result,
+        ml,
+        assessment.get("decision"),
+        assessment.get("confidence"),
+        assessment.get("trust_score"),
+    )
 
     return jsonify({
         "processing_id": processing_id,
@@ -246,10 +259,8 @@ def analyze():
         "engine4": engine4_result,
         "engine5": engine5_result,
         "engine6": engine6_result,
-        "ml_opinion": model_opinion(
-            job_data.get("job_title", ""),
-            job_data.get("job_description", "")
-        )
+        "ml_opinion": ml,
+        "plain_explanation": plain
     })
     
 

@@ -48,3 +48,8 @@ jobscamscore-frontend/
 *_results*.json
 
 .env
+
+# Allow the unfinished frontend backup to be tracked
+
+!JobScamScore_Final/frontend-v13-backup/
+
