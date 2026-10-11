@@ -31,6 +31,7 @@ def build_plain_explanation(e1, e2, e3, e4, ml, decision, confidence, score):
         age_said = False
         salary_said = False
         pressure_said = False
+        email_mismatch = False
 
         # ---------------- Company identity (Engine 1) ----------------
         if _get(e1, "data", "website_verification"):
@@ -59,6 +60,7 @@ def build_plain_explanation(e1, e2, e3, e4, ml, decision, confidence, score):
                 add("good", "The recruiter's email ends with the same name as the company's website.")
             elif domain_match is False:
                 add("warn", "The recruiter's email does not match the company's website name.")
+            email_mismatch = bool(public_email) or domain_match is False
 
             years = _get(e1, "data", "whois_verification", "data", "domain_age_years")
             if isinstance(years, int):
@@ -77,7 +79,8 @@ def build_plain_explanation(e1, e2, e3, e4, ml, decision, confidence, score):
                 add("warn", "The company name is not in our small sample list of registered companies. That does not mean it is fake, only that we could not confirm it.")
         else:
             add("warn", "The company identity checks could not run, because the company website or the recruiter's email was not provided.")
-
+        if email_mismatch:
+            add("warn", "The website may look fine, but the recruiter's email does not come from it. The website may not belong to the company that posted this ad, so do not treat its good signs as proof.")
         # ---------------- Website safety (Engine 4) ----------------
         d4 = _get(e4, "data", default={})
         if isinstance(d4, dict) and d4:
@@ -175,6 +178,15 @@ def build_plain_explanation(e1, e2, e3, e4, ml, decision, confidence, score):
 
     except Exception:
         pass
+        if email_mismatch:
+         for i in items:
+            if i["level"] == "good" and any(
+                w in i["text"].lower()
+                for w in ("website", "security certificate", "virustotal", "google safe browsing")
+            ):
+                first_word = i["text"].split(" ")[0]
+                keep_capital = first_word in ("Google", "VirusTotal,")
+                i["text"] = "About the website only: " + (i["text"] if keep_capital else i["text"][0].lower() + i["text"][1:])
 
     order = {"bad": 0, "warn": 1, "good": 2}
     items.sort(key=lambda i: order[i["level"]])
