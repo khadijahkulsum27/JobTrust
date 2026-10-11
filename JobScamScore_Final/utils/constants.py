@@ -209,9 +209,9 @@ SUSPICIOUS_KEYWORDS = [
     "easy money",
     "guaranteed job",
     "100% placement",
-    "click here",
-    "apply now"
+    "click here"
 ]
+
 
 
 # -----------------------------
@@ -219,7 +219,6 @@ SUSPICIOUS_KEYWORDS = [
 # -----------------------------
 
 URGENCY_PHRASES = [
-    "apply now",
     "hurry",
     "urgent hiring",
     "last chance",
