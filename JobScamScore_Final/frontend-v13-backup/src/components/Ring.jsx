@@ -10,7 +10,7 @@ export default function Ring({ value = 0, label = "", size = 150, unit = "%" }) 
       <svg viewBox="0 0 120 120">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#22d3ee" /><stop offset="1" stopColor="#a78bfa" />
+            <stop offset="0" stopColor="#9fd0ff" /><stop offset="1" stopColor="#4d9cf0" />
           </linearGradient>
         </defs>
         <circle cx="60" cy="60" r={r} className="ring-track" />

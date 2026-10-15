@@ -1,0 +1,124 @@
+/* Dashboard redesign. Kept separate so index.css is untouched. */
+
+/* ---------- Welcome card: glowing border + illustration ---------- */
+.dx-welcome {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(105, 224, 187, 0.45) !important;
+  box-shadow: 0 0 0 1px rgba(79, 124, 255, 0.35), 0 0 26px rgba(79, 124, 255, 0.35), 0 0 60px rgba(105, 224, 187, 0.15);
+  animation: dxGlow 4s ease-in-out infinite;
+}
+
+@keyframes dxGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(79, 124, 255, 0.35), 0 0 22px rgba(79, 124, 255, 0.3), 0 0 50px rgba(105, 224, 187, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(105, 224, 187, 0.55), 0 0 34px rgba(79, 124, 255, 0.5), 0 0 80px rgba(105, 224, 187, 0.25);
+  }
+}
+
+.dx-illus {
+  display: none;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 240px;
+  height: auto;
+  pointer-events: none;
+}
+
+@media (min-width: 1100px) {
+  .dx-welcome { padding-right: 290px; }
+  .dx-illus { display: block; }
+}
+
+.dx-mint { color: #69e0bb; }
+
+/* ---------- Count cards ---------- */
+.dx-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 800px) {
+  .dx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.dx-stat {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(138, 180, 255, 0.18);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.dx-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.dx-stat-icon .icon { width: 22px; height: 22px; }
+
+.dx-stat-num { display: block; font-size: 28px; line-height: 1.1; font-weight: 700; }
+.dx-stat-label { display: block; color: #9fb0da; margin-top: 2px; }
+.dx-trend { margin-top: 8px; font-size: 13px; }
+.dx-trend small { color: #9fb0da; }
+
+/* ---------- Recent scan results ---------- */
+.dx-recent-head,
+.dx-recent li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 56px 116px 112px 16px;
+  align-items: center;
+  gap: 14px;
+}
+
+.dx-recent-head {
+  color: #9fb0da;
+  font-size: 13px;
+  padding: 6px 0 10px;
+}
+
+.dx-recent { list-style: none; margin: 0; padding: 0; }
+
+.dx-recent li {
+  padding: 12px 0;
+  border-top: 1px solid rgba(138, 180, 255, 0.14);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.dx-recent li:hover { background: rgba(255, 255, 255, 0.03); }
+
+.dx-job-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dx-job-icon .icon { width: 22px; height: 22px; }
+
+.dx-recent-title strong { display: block; }
+.dx-recent-title span { color: #9fb0da; font-size: 14px; }
+.dx-date { font-size: 13px; color: #cbd5ff; line-height: 1.35; }
+.dx-arrow { color: #9fb0da; font-size: 20px; }
+
+@media (max-width: 760px) {
+  .dx-recent-head { display: none; }
+  .dx-recent li { grid-template-columns: 44px minmax(0, 1fr) 56px; }
+  .dx-recent li .pill,
+  .dx-recent li .dx-date,
+  .dx-recent li .dx-arrow { display: none; }
+}

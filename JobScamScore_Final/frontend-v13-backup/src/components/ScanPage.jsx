@@ -8,6 +8,12 @@ import ReportView from "./ReportView.jsx";
 const EMPTY = { job_title: "", company_name: "", job_description: "", website: "", email: "", salary: "", experience_level: "fresher" };
 const READABLE = [".pdf", ".png", ".jpg", ".jpeg"];
 
+const SAMPLE = {
+  job_title: "Data Entry Operator",
+  company_name: "Sample Company",
+  job_description: "Earn Rs 5000 daily working from home! No experience needed. Only a mobile phone required. Pay a small registration fee of Rs 999 to confirm your seat. Limited seats, hurry! Send your Aadhaar and bank details on WhatsApp to start immediately.",
+};
+
 export default function ScanPage() {
   const [form, setForm] = useState(EMPTY);
   const [tab, setTab] = useState("text");
@@ -115,6 +121,12 @@ export default function ScanPage() {
 
   function reset() { setForm(EMPTY); setLinkUrl(""); setNote(""); setReport(null); setStatus("idle"); }
 
+  function fillSample() {
+    setError("");
+    setNote("This is a made-up scam-style ad, for trying the scanner.");
+    setForm((f) => ({ ...f, ...SAMPLE }));
+  }
+
   if (status === "done" && report) return (<><h1 className="page-title">Your trust report</h1><ReportView report={report} onReset={reset} /></>);
 
   const busy = status === "reading" || status === "loading";
@@ -177,16 +189,34 @@ export default function ScanPage() {
           </button>
         </form>
 
-        <aside className="tile side-list">
-          <h3>Every scan checks</h3>
-          <ul>
-            <li><strong>Company identity</strong><span>Website, email domain, registration.</span></li>
-            <li><strong>Job content</strong><span>Wording, urgency, contacts, pay.</span></li>
-            <li><strong>Scam patterns</strong><span>Behaviour and salary sense.</span></li>
-            <li><strong>Website safety</strong><span>HTTPS, domain age, phishing.</span></li>
-          </ul>
-        </aside>
-      </div>
+               <div className="scan-side">
+          <aside className="tile side-list">
+            <h3>Every scan checks</h3>
+            <ul>
+              <li><strong>Company identity</strong><span>Website, email domain, registration.</span></li>
+              <li><strong>Job content</strong><span>Wording, urgency, contacts, pay.</span></li>
+              <li><strong>Scam patterns</strong><span>Behaviour and salary sense.</span></li>
+              <li><strong>Website safety</strong><span>HTTPS, domain age, phishing.</span></li>
+            </ul>
+          </aside>
+
+          <aside className="tile">
+            <h3>Try a sample ad</h3>
+            <p className="muted sample-text">A made-up ad with typical scam signs, so you can see how the scanner reacts. It has no website or email, so the check will be incomplete.</p>
+            <button type="button" className="btn-pill btn-small" onClick={fillSample} disabled={busy}>Use sample</button>
+          </aside>
+
+          <aside className="tile">
+            <h3>Quick tips</h3>
+            <ul className="tips">
+              <li>Verify the company's official website</li>
+              <li>Never pay money to get a job</li>
+              <li>Check that the contact details match the company</li>
+              <li>Be careful with urgent offers</li>
+            </ul>
+          </aside>
+        </div>
+       </div>
     </>
   );
 }

@@ -34,6 +34,7 @@ export function normalizeAnalyze(raw) {
     negative_findings: d.negative_findings || [],
     uncertain_findings: d.uncertain_findings || [],
     conflict_findings: d.conflict_findings || [],
+    plain_explanation: raw.plain_explanation || null,
     ml_opinion: raw.ml_opinion || null,
   };
 }

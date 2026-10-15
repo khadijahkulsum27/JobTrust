@@ -149,3 +149,65 @@ h1, h2, h3, .page-title, .hero-title { font-weight: 700; letter-spacing: -0.01em
   .recent-list li { grid-template-columns: minmax(0, 1fr) 52px auto; }
   .recent-date { display: none; }
 }
+/* dashboard: the lower boxes run the full width of the page */
+.dash-wide { grid-column: 1 / -1; display: grid; gap: 1.5rem; }
+.legend { max-width: 560px; }
+/* dashboard: Risk distribution and the 7-day chart side by side */
+.dash-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+@media (max-width: 1100px) { .dash-pair { grid-template-columns: 1fr; } }
+/* ---- scan page ---- */
+.scan-side { display: grid; gap: 1.5rem; align-content: start; }
+.sample-text { margin: 0.5rem 0 1rem; }
+
+.tabs { background: #081330; border: 1px solid var(--line); border-radius: 12px; }
+.tabs button { border-radius: 9px; color: var(--muted); border: 1px solid transparent; background: transparent; }
+.tabs button.on {
+  background: linear-gradient(90deg, rgba(120, 165, 220, 0.22), rgba(120, 165, 220, 0.08));
+  border-color: rgba(var(--glow), 0.5);
+  color: #eef5ff;
+  box-shadow: 0 0 14px rgba(var(--glow), 0.18);
+}
+
+.field > span { color: var(--muted); font-weight: 600; }
+.field input, .field textarea, .field select {
+  background: #081330; border: 1px solid var(--line); border-radius: 10px; color: var(--text);
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none; border-color: rgba(var(--glow), 0.7); box-shadow: 0 0 0 3px rgba(var(--glow), 0.15);
+}
+.note { border-radius: 12px; }
+/* 7-day chart: bars in soft silver */
+.week-bar {
+  background: linear-gradient(180deg, rgba(8, 157, 202, 0.925), rgba(19, 3, 90, 0.45));
+  border: 1px solid rgba(226, 234, 248, 0.35);
+  box-shadow: 0 0 10px rgba(217, 235, 198, 0.12);
+}
+.week-count, .week-day { color: var(--muted); }
+/* ---- history, report a scam ---- */
+.chip { border-radius: 10px; border: 1px solid var(--line); background: #081330; color: var(--muted); }
+.chip.on {
+  background: linear-gradient(90deg, rgba(120, 165, 220, 0.22), rgba(120, 165, 220, 0.08));
+  border-color: rgba(var(--glow), 0.5);
+  color: #eef5ff;
+  box-shadow: 0 0 14px rgba(var(--glow), 0.18);
+}
+.hist-search { background: #081330; border: 1px solid var(--line); border-radius: 10px; color: var(--text); }
+.hist-search:focus { outline: none; border-color: rgba(var(--glow), 0.7); box-shadow: 0 0 0 3px rgba(var(--glow), 0.15); }
+.hist-card { border-radius: 16px; }
+.hist-card:hover { border-color: rgba(var(--glow), 0.5); box-shadow: 0 0 18px rgba(var(--glow), 0.15); }
+.star.on { color: #f5c542; }
+/* ---- report page ---- */
+.report .tile { border-radius: 16px; }
+.report-top {
+  background: linear-gradient(135deg, rgba(77, 127, 196, 0.16), rgba(11, 26, 58, 0.92));
+  border: 1px solid var(--line);
+}
+.bar-track { background: rgba(255, 255, 255, 0.08); }
+.finding.info { border-left-color: rgba(var(--glow), 0.7); }
+.recommend {
+  background: linear-gradient(90deg, rgba(120, 165, 220, 0.14), rgba(120, 165, 220, 0.05));
+  border: 1px solid rgba(var(--glow), 0.4);
+  border-radius: 16px;
+  box-shadow: 0 0 18px rgba(var(--glow), 0.12);
+}
+.notice { border-radius: 12px; }
